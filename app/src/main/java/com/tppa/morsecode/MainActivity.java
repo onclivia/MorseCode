@@ -84,12 +84,13 @@ public class MainActivity extends AppCompatActivity {
                 progress_textView.setText(pval+"/"+seekBar.getMax());
                 unit = pval;
                 pattern = new long[] {300, unit, unit, 3*unit, unit, unit, unit, 3*unit, unit};
-                morseCodeGeneralManager = new MorseCodeGeneralManager(choice, unit, pattern, context);
+                morseCodeGeneralManager.setUnit(unit);
+                morseCodeGeneralManager.setPattern(pattern);
                 checkNotificationButtonClicked(findViewById(R.id.check_led_btn_on));
             }
         });
 
-
+        morseCodeGeneralManager = new MorseCodeGeneralManager(choice, unit, pattern, context);
     }
 
     public void checkNotificationButtonClicked(View view){

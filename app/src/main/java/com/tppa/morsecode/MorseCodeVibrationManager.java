@@ -20,10 +20,12 @@ public class MorseCodeVibrationManager {
     Vibrator vibrator ;
     Alphabet alphabet;
     int unit;
+    long[] pattern;
     Context context;
 
-    public MorseCodeVibrationManager(int unit, Context context){
+    public MorseCodeVibrationManager(int unit, long[] pattern, Context context){
         this.unit = unit;
+        this.pattern = pattern;
         this.context = context;
         vibrator  = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
         alphabet = new Alphabet();
@@ -34,9 +36,13 @@ public class MorseCodeVibrationManager {
         this.unit = unit;
     }
 
-    public void createVibration(long[] pattern, int repeatMode){
+    public void setPattern(long[] pattern){
+        this.pattern = pattern;
+    }
+
+    public void createVibration(int repeatMode){
         if (vibrator.hasVibrator()) {
-            vibrator.vibrate(pattern, repeatMode);
+            vibrator.vibrate(this.pattern, repeatMode);
         }
     }
 

@@ -28,13 +28,15 @@ public class MorseCodeLedManager {
     final private String channelIDLights = "Lights";
     private Context context;
     private int unit;
+    private long[] pattern;
 
     int notificationID = 1;
     int receivedID;
 
-    public MorseCodeLedManager(int unit, Context context){
+    public MorseCodeLedManager(int unit,long[] pattern, Context context){
         this.context = context;
         this.unit = unit;
+        this.pattern = pattern;
 
         nReceiver = new NotificationReceiver();
         IntentFilter filter = new IntentFilter();
@@ -48,6 +50,9 @@ public class MorseCodeLedManager {
         this.unit = unit;
     }
 
+    public void setPattern(long[] pattern){
+        this.pattern = pattern;
+    }
 
     public void createLedNotification() {
         notificationID = 1;
