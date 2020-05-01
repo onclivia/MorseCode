@@ -10,12 +10,11 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="• Press below button to check vibration. Press again to stop."
-        android:textStyle="bold|italic"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
-        />
+        android:text="• Press below button to check led/vibration. Press again to stop."
+        android:textStyle="bold|italic" />
 
     <RelativeLayout
         android:id="@+id/check_btn"
@@ -43,6 +42,14 @@
             android:onClick="checkNotificationButtonUnclicked"
 
             android:visibility="gone" />
+
+        <ImageButton
+            android:id="@+id/choose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_alignParentRight="true"
+            app:srcCompat="@android:drawable/ic_menu_manage" />
 
 
     </RelativeLayout>

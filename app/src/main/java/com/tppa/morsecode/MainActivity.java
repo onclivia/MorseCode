@@ -1,13 +1,16 @@
 package com.tppa.morsecode;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
+import android.app.Dialog;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -17,22 +20,20 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
     Context context = this;
-    MorseCodeVibrationManager morseCodeVibrationManager;
-
-    final String CHANNEL_ID_Lights = "Lights";
-    final String CHANNEL_ID_Vibration = "Vibration";
-    NotificationManagerCompat notificationManager;
+    MorseCodeGeneralManager morseCodeGeneralManager;
+    int choice;
 
     ImageButton btnON;
     ImageButton btnOFF;
+    ImageButton choose;
+
     //MorseCodeLedManager morseCodeManager;
-    long[] vibrationPattern = new long[] {};
-    final int checkLedAndVibrationNotificationId = 0;
-    final int frequencyNotificationId = 1;
+    long[] pattern = new long[] {};
     int unit = 0;
     private SeekBar seekBar;
     private TextView progress_textView;
@@ -46,10 +47,21 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        //morseCodeLedManager = new MorseCodeLedManager(this, vibrationPattern);
+        //morseCodeLedManager = new MorseCodeLedManager(this, pattern);
+
+        choice = 0;
 
         btnON = findViewById(R.id.check_led_btn_on);
         btnOFF = findViewById(R.id.check_led_btn_off);
+        choose = findViewById(R.id.choose);
+
+        choose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                chooseLedOrVibration();
+            }
+        });
+
 
         seekBar = findViewById(R.id.frequency_seekBar);
         progress_textView = findViewById(R.id.seekBar_progress);
@@ -57,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         unit = seekBar.getProgress();
-        vibrationPattern = new long[] {0, unit, unit, 3*unit, unit, unit, unit, 3*unit, unit};
+        pattern = new long[] {0, unit, unit, 3*unit, unit, unit, unit, 3*unit, unit};
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             int pval = 0;
@@ -76,23 +88,19 @@ public class MainActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 progress_textView.setText(pval+"/"+seekBar.getMax());
                 unit = pval;
-                vibrationPattern = new long[] {300, unit, unit, 3*unit, unit, unit, unit, 3*unit, unit};
-                morseCodeVibrationManager.createVibration(vibrationPattern, 0);
-                //morseCodeLedManager.setVibrationPattern(vibrationPattern);
+                pattern = new long[] {300, unit, unit, 3*unit, unit, unit, unit, 3*unit, unit};
+                checkNotificationButtonClicked(findViewById(R.id.check_led_btn_on));
             }
         });
 
-
-        morseCodeVibrationManager = new MorseCodeVibrationManager(unit, this);
-
+        morseCodeGeneralManager = new MorseCodeGeneralManager(choice, unit, pattern, context);
 
     }
 
     public void checkNotificationButtonClicked(View view){
 
         //make ON button visible
-
-        morseCodeVibrationManager.createVibration(vibrationPattern, 0);
+        morseCodeGeneralManager.createActionForCheckButton();
         btnOFF.setVisibility(View.GONE);
         btnON.setVisibility(View.VISIBLE);
     }
@@ -100,54 +108,30 @@ public class MainActivity extends AppCompatActivity {
     public void checkNotificationButtonUnclicked(View view) {
 
         //notificationManager.cancel(checkLedAndVibrationNotificationId);
-        morseCodeVibrationManager.stopVibration();
+        morseCodeGeneralManager.stopActionForCheckButton();
         btnON.setVisibility(View.GONE);
         btnOFF.setVisibility(View.VISIBLE);
     }
 
 
+    public String[] items = new String[]{"Vibrations","LED"};
+    public void chooseLedOrVibration(){
 
-    public void checkLedAndVibrationNotification() {
-        Intent intent = new Intent(context, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
-        NotificationCompat.Builder builder;
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("Choose:");
+        builder.setSingleChoiceItems(items, choice, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                choice = i;
+                morseCodeGeneralManager.setChoice(choice);
+                Toast.makeText(MainActivity.this,"Your choice: " + items[i], Toast.LENGTH_LONG).show();
+                dialogInterface.dismiss();
 
-        createNotificationChannel();
-
-        builder = new NotificationCompat.Builder(context, CHANNEL_ID_Vibration);
-
-        vibrationPattern = new long[] {0, unit, unit, 3*unit, unit, unit, unit, 3*unit, unit};
-        builder.setSmallIcon(R.drawable.notification_icon1)
-                .setContentTitle("Morse Code")
-                .setContentText("Led started")
-                .setVibrate(vibrationPattern)
-                .setLights(Color.MAGENTA, 2000, 200)
-                .setDefaults(NotificationCompat.DEFAULT_SOUND|  NotificationCompat.FLAG_SHOW_LIGHTS)
-                .setOngoing(true)
-                .setContentIntent(pendingIntent);
-
-        notificationManager = NotificationManagerCompat.from(context);
-        notificationManager.notify(checkLedAndVibrationNotificationId, builder.build());
-    }
-
-    public void createNotificationChannel(){
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = ("Vibration channel");
-
-            //vibrationPattern = new long[] {0, 500, 500, 500,400, 500, 300};
-            int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID_Vibration, name, importance);
-            channel.enableLights(true);
-            channel.enableVibration(true);
-            //channel.setVibrationPattern(vibrationPattern);
-            //channel.setLightColor(Color.MAGENTA);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
 
     }
 
@@ -155,12 +139,16 @@ public class MainActivity extends AppCompatActivity {
     public void writeSentenceActivity(View view){
         Intent intent = new Intent(getBaseContext(),   WriteSentenceActivity.class);
         intent.putExtra("unit",unit);
+        intent.putExtra("pattern",pattern);
+        intent.putExtra("choice",choice);
         startActivity(intent);
     }
 
     public void goToAlphabetActivity(View view){
         Intent intent = new Intent(getBaseContext(),   GoToAlphabetActivity.class);
         intent.putExtra("unit",unit);
+        intent.putExtra("pattern",pattern);
+        intent.putExtra("choice",choice);
         startActivity(intent);
     }
 

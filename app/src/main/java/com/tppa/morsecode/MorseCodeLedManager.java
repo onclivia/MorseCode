@@ -16,23 +16,16 @@ import static androidx.core.content.ContextCompat.getSystemService;
 public class MorseCodeLedManager {
 
     final String CHANNEL_ID_Lights = "Lights";
-    final String CHANNEL_ID_Vibration = "Vibration";
     NotificationManagerCompat notificationManager;
-    long[] vibrationPattern;
     int notificationId;
     Context context;
 
-    public MorseCodeLedManager(Context context, long[] vibrationPattern){
+    public MorseCodeLedManager(Context context){
         this.context = context;
-        this.vibrationPattern = vibrationPattern;
-    }
-
-    public void setVibrationPattern(long[] vibrationPattern) {
-        this.vibrationPattern = vibrationPattern;
     }
 
     //must modify for led
-    public void checkLedAndVibrationNotification() {
+    public void createLedNotification() {
         Intent intent = new Intent(context, MorseCodeLedManager.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
@@ -41,7 +34,7 @@ public class MorseCodeLedManager {
 
         createNotificationChannel();
 
-        builder = new NotificationCompat.Builder(context, CHANNEL_ID_Vibration);
+        builder = new NotificationCompat.Builder(context, CHANNEL_ID_Lights);
 
         builder.setSmallIcon(R.drawable.notification_icon1)
                 .setContentTitle("Morse Code")
@@ -58,10 +51,8 @@ public class MorseCodeLedManager {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = ("Vibration channel");
             int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID_Vibration, name, importance);
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID_Lights, name, importance);
             channel.enableLights(true);
-            channel.enableVibration(true);
-            channel.setVibrationPattern(vibrationPattern);
             //channel.setLightColor(Color.MAGENTA);
             // Register the channel with the system; you can't change the importance
             // or other notification behaviors after this
@@ -75,5 +66,9 @@ public class MorseCodeLedManager {
     public void stopNotification(int notificationId){
 
         notificationManager.cancel(notificationId);
+    }
+
+    public void blinkForCharacter(String character){
+        //actions for blinking character
     }
 }

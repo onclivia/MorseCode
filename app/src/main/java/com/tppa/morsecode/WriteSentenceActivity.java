@@ -1,34 +1,28 @@
 package com.tppa.morsecode;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.telephony.SmsManager;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.Normalizer;
 import java.util.Objects;
 
-import static java.lang.Thread.sleep;
-
 public class WriteSentenceActivity extends AppCompatActivity {
 
-    MorseCodeVibrationManager morseCodeVibrationManager;
+    MorseCodeGeneralManager morseCodeGeneralManager;
     Context context;
     public String sentence = "";
     public String encryptedSentence = "";
@@ -40,7 +34,8 @@ public class WriteSentenceActivity extends AppCompatActivity {
     int unit = 0;
     int index = 0;
     int delay = unit;
-
+    long[] pattern = new long[]{};
+    int choice = 0;
     Handler handler = new Handler();
     AlertDialog.Builder builder;
 
@@ -53,6 +48,9 @@ public class WriteSentenceActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             unit = extras.getInt("unit");
+            choice = extras.getInt("choice");
+            pattern = extras.getLongArray("pattern");
+
         }
 
         if (savedInstanceState != null) {
@@ -61,7 +59,7 @@ public class WriteSentenceActivity extends AppCompatActivity {
 
 
         context = this;
-        morseCodeVibrationManager = new MorseCodeVibrationManager(unit, this);
+        morseCodeGeneralManager = new MorseCodeGeneralManager(choice, unit, pattern, context);
         alphabet = new Alphabet();
         builder = new AlertDialog.Builder(this);
 
@@ -151,8 +149,8 @@ public class WriteSentenceActivity extends AppCompatActivity {
         @Override
         public void run() {
 
-            String character = "";
-            String morseCode = "";
+            String character;
+            String morseCode;
 
             //normalize for diacritics
             sentence = sentence.toLowerCase();
@@ -165,7 +163,7 @@ public class WriteSentenceActivity extends AppCompatActivity {
             if (alphabet.alphabet.containsKey((character))) {
                 morseCode = alphabet.alphabet.get(character);
                 encryptedSentence = encryptedSentence + morseCode + " ";
-                morseCodeVibrationManager.vibrateForCharacter(character);
+                morseCodeGeneralManager.actionForSingleCharacter(character);
                 character_show.setText(character);
                 morse_code_show.setText(morseCode);
                 for(int j = 0; j < morseCode.length(); j++){

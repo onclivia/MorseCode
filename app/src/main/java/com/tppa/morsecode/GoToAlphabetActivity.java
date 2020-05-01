@@ -18,7 +18,10 @@ import java.util.Map;
 
 public class GoToAlphabetActivity extends AppCompatActivity {
 
-    MorseCodeVibrationManager morseCodeVibrationManager;
+    MorseCodeGeneralManager morseCodeGeneralManager;
+
+    long[] pattern = new long[]{};
+    int choice = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,11 +31,15 @@ public class GoToAlphabetActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             unit = extras.getInt("unit");
+
+            choice = extras.getInt("choice");
+            pattern = extras.getLongArray("pattern");
         }
 
         setContentView(R.layout.activity_go_to_alphabet);
 
-        morseCodeVibrationManager = new MorseCodeVibrationManager(unit, this);
+        morseCodeGeneralManager = new MorseCodeGeneralManager(choice, unit, pattern, this);
+
         final Alphabet alphabet = new Alphabet();
         final AlphabetAdapter alphabetAdapter = new AlphabetAdapter(this, alphabet.alphabet);
 
@@ -76,16 +83,15 @@ public class GoToAlphabetActivity extends AppCompatActivity {
     public void showMorseCodeForCharacter(String key, String value){
         Toast toast = Toast.makeText(this, "Character: "+ key + "\nMorse code: "+ value, Toast.LENGTH_SHORT);
         toast.show();
+        morseCodeGeneralManager.actionForSingleCharacter(key);
 
-        morseCodeVibrationManager.vibrateForCharacter(key);
-        //JUST MAKE LED BLINKING!!
     }
 
 
     @Override
     protected void onPause(){
         super.onPause();
-        morseCodeVibrationManager.stopVibration();
+        morseCodeGeneralManager.stopActionForCheckButton();
         Log.d("onPause","onPause");
     }
 
@@ -97,8 +103,7 @@ public class GoToAlphabetActivity extends AppCompatActivity {
 
     @Override
     protected void onStop(){
-        super.onStop();
-        morseCodeVibrationManager.stopVibration();
+        super.onStop();morseCodeGeneralManager.stopActionForCheckButton();
         Log.d("onStop", "onStop");
     }
 
