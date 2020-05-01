@@ -113,5 +113,20 @@ public class GoToAlphabetActivity extends AppCompatActivity {
         Log.d("onDestroy", "onDestroy");
     }
 
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState){
+        super.onRestoreInstanceState(savedInstanceState);
+        choice = savedInstanceState.getInt("CHOICE_STATE");
+        Log.d("","onRestoreInstanceState");
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState){
+        super.onSaveInstanceState(outState);
+        outState.putInt("CHOICE_STATE", choice);
+        Log.d("","onSaveInstanceState");
+    }
+
+
 
 }

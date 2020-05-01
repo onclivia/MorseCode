@@ -1,74 +1,106 @@
 package com.tppa.morsecode;
 
+import android.annotation.SuppressLint;
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Build;
+import android.service.notification.StatusBarNotification;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 
 import static androidx.core.content.ContextCompat.getSystemService;
 
 public class MorseCodeLedManager {
+    NotificationReceiver nReceiver;
 
-    final String CHANNEL_ID_Lights = "Lights";
-    NotificationManagerCompat notificationManager;
-    int notificationId;
-    Context context;
 
-    public MorseCodeLedManager(Context context){
+    private NotificationManagerCompat notificationManager;
+    final private String channelIDLights = "Lights";
+    private Context context;
+    private int unit;
+
+    int notificationID = 1;
+    int receivedID;
+
+    public MorseCodeLedManager(int unit, Context context){
         this.context = context;
+        this.unit = unit;
+
+        nReceiver = new NotificationReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("com.tppa.morsecode.GET_ACTIVE_NOTIFICATIONS_LIST");
+        this.context.registerReceiver(nReceiver,filter);
+
     }
 
-    //must modify for led
+
+    public void setUnit(int unit){
+        this.unit = unit;
+    }
+
+
     public void createLedNotification() {
-        Intent intent = new Intent(context, MorseCodeLedManager.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+        notificationID = 1;
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this.context, channelIDLights);
 
-        NotificationCompat.Builder builder;
+        NotificationManager notificationManager =  (NotificationManager) this.context.getSystemService( Context.NOTIFICATION_SERVICE );
 
-        createNotificationChannel();
-
-        builder = new NotificationCompat.Builder(context, CHANNEL_ID_Lights);
-
-        builder.setSmallIcon(R.drawable.notification_icon1)
-                .setContentTitle("Morse Code")
-                .setContentText("Led started")
-                .setLights(Color.MAGENTA, 2000, 200)
-                .setDefaults(NotificationCompat.DEFAULT_SOUND| NotificationCompat.FLAG_SHOW_LIGHTS)
-                .setContentIntent(pendingIntent);
-
-        notificationManager = NotificationManagerCompat.from(context);
-        notificationManager.notify(notificationId, builder.build());
-    }
-
-    public void createNotificationChannel(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = ("Vibration channel");
-            int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID_Lights, name, importance);
-            channel.enableLights(true);
-            //channel.setLightColor(Color.MAGENTA);
-            // Register the channel with the system; you can't change the importance
-            // or other notification behaviors after this
-            NotificationManager notificationManager = getSystemService(context, NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
+            @SuppressLint("WrongConstant") NotificationChannel notificationChannel = new NotificationChannel(channelIDLights, "Lights notifications", NotificationManager.IMPORTANCE_MAX);
+            // Configure the notification channel.
+            notificationChannel.enableLights(true);
+            //notificationChannel.setLightColor(Color.RED);
+            //notificationChannel.setVibrationPattern(new long[]{0, 1000, 500, 1000});
+            //notificationChannel.enableVibration(true);
+            notificationManager.createNotificationChannel(notificationChannel);
         }
 
+        builder.setSmallIcon(R.drawable.notification_icon1);
+        builder.setContentTitle("Morse code");
+        builder.setContentText("Led notification");
+        builder.setLights(Color.MAGENTA, 500, 500);
+        builder.setAutoCancel(true);
+        builder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
+        builder.setPriority(Notification.PRIORITY_MAX);
+
+        notificationManager.notify(notificationID, builder.build());
+
     }
 
 
-    public void stopNotification(int notificationId){
 
-        notificationManager.cancel(notificationId);
+    public void stopNotification(){
+
+        Intent i = new Intent("com.tppa.morsecode.GET_ACTIVE_NOTIFICATIONS_LIST_SERVICE");
+        this.context.sendBroadcast(i);
+        if(notificationID == receivedID){
+            notificationManager.cancel(notificationID);
+        }
     }
 
     public void blinkForCharacter(String character){
         //actions for blinking character
+    }
+
+    class NotificationReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            receivedID = intent.getIntExtra("id", -1);
+        }
+    }
+
+    public void onDestroy() {
+        this.context.unregisterReceiver(nReceiver);
     }
 }

@@ -30,6 +30,9 @@ public class MorseCodeVibrationManager {
     }
 
 
+    public void setUnit(int unit){
+        this.unit = unit;
+    }
 
     public void createVibration(long[] pattern, int repeatMode){
         if (vibrator.hasVibrator()) {

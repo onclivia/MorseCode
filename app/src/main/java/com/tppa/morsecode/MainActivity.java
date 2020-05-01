@@ -46,11 +46,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-        //morseCodeLedManager = new MorseCodeLedManager(this, pattern);
-
-        choice = 0;
-
         btnON = findViewById(R.id.check_led_btn_on);
         btnOFF = findViewById(R.id.check_led_btn_off);
         choose = findViewById(R.id.choose);
@@ -89,11 +84,11 @@ public class MainActivity extends AppCompatActivity {
                 progress_textView.setText(pval+"/"+seekBar.getMax());
                 unit = pval;
                 pattern = new long[] {300, unit, unit, 3*unit, unit, unit, unit, 3*unit, unit};
+                morseCodeGeneralManager = new MorseCodeGeneralManager(choice, unit, pattern, context);
                 checkNotificationButtonClicked(findViewById(R.id.check_led_btn_on));
             }
         });
 
-        morseCodeGeneralManager = new MorseCodeGeneralManager(choice, unit, pattern, context);
 
     }
 
@@ -107,7 +102,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void checkNotificationButtonUnclicked(View view) {
 
-        //notificationManager.cancel(checkLedAndVibrationNotificationId);
         morseCodeGeneralManager.stopActionForCheckButton();
         btnON.setVisibility(View.GONE);
         btnOFF.setVisibility(View.VISIBLE);
@@ -181,19 +175,23 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy(){
         super.onDestroy();
-        checkNotificationButtonUnclicked(findViewById(R.id.check_led_btn_on));
+        morseCodeGeneralManager.morseCodeLedManager.onDestroy();
+        checkNotificationButtonUnclicked(findViewById(R.id.check_led_btn_off));
         Log.d("onDestroy", "onDestroy");
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState){
         super.onRestoreInstanceState(savedInstanceState);
+        choice = savedInstanceState.getInt("CHOICE_STATE");
+        morseCodeGeneralManager.setChoice(choice);
         Log.d("","onRestoreInstanceState");
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState){
         super.onSaveInstanceState(outState);
+        outState.putInt("CHOICE_STATE", choice);
         Log.d("","onSaveInstanceState");
     }
 

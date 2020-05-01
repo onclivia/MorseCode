@@ -8,16 +8,25 @@ public class MorseCodeGeneralManager {
     MorseCodeLedManager morseCodeLedManager;
     int choice;
     long[] pattern;
+    int unit;
 
     public MorseCodeGeneralManager(int choice, int unit, long[] pattern, Context context){
         this.choice = choice;
         this.pattern = pattern;
+        this.unit = unit;
         this.morseCodeVibrationManager = new MorseCodeVibrationManager(unit,context);
-        this.morseCodeLedManager = new MorseCodeLedManager(context);
+        this.morseCodeLedManager = new MorseCodeLedManager(unit, context);
     }
 
     public void setChoice(int choice){
         this.choice = choice;
+    }
+
+
+    public void setUnit(int unit){
+        morseCodeVibrationManager.setUnit(unit);
+        morseCodeLedManager.setUnit(unit);
+        this.unit = unit;
     }
 
     public void createActionForCheckButton(){
@@ -34,7 +43,7 @@ public class MorseCodeGeneralManager {
             morseCodeVibrationManager.stopVibration();
         }
         else if(choice == 1){
-            morseCodeLedManager.stopNotification(0);
+            morseCodeLedManager.stopNotification();
         }
     }
 

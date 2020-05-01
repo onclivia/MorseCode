@@ -8,4 +8,5 @@
     <string name="choose_action">Choose action</string>
     <string name="choose_action_message">Type another sentence or send encrypted sentence through SMS?</string>
     <string name="decrypt_note">• Note: paste from received SMS or write yourself using characters: \'.\'(dot) and \'-\'(dash)\n• Format: 1 space between letters, 2 spaces between words</string>
+    <string name="service_name">GET_ACTIVE_NOTIFICATIONS_LIST</string>
 </resources>

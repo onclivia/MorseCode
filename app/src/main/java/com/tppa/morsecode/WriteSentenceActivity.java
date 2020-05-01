@@ -236,7 +236,7 @@ public class WriteSentenceActivity extends AppCompatActivity {
         character_show.setText(savedInstanceState.getString("CHARACTER_SHOW_KEY"));
         morse_code_show.setText(savedInstanceState.getString("MORSE_CODE_SHOW_KEY"));
         sentence_edit.setText(savedInstanceState.getString("EDIT_SENTENCE_KEY"));
-
+        choice = savedInstanceState.getInt("CHOICE_STATE");
         Log.d("","onRestoreInstanceState");
     }
 
@@ -246,7 +246,7 @@ public class WriteSentenceActivity extends AppCompatActivity {
         outState.putString("CHARACTER_SHOW_KEY", character_show.getText().toString());
         outState.putString("MORSE_CODE_SHOW_KEY", morse_code_show.getText().toString());
         outState.putString("EDIT_SENTENCE_KEY",sentence_edit.getText().toString() );
-
+        outState.putInt("CHOICE_STATE", choice);
         super.onSaveInstanceState(outState);
         Log.d("","onSaveInstanceState");
     }
