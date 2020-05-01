@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="• Press below button to check vibration. Press again to stop."
+        android:textStyle="bold|italic"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        />
+
+    <RelativeLayout
+        android:id="@+id/check_btn"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+
+        <ImageButton
+            android:id="@+id/check_led_btn_off"
+            android:layout_width="100dp"
+            android:layout_height="20dp"
+            android:layout_centerInParent="true"
+            android:background="@android:drawable/button_onoff_indicator_off"
+            android:onClick="checkNotificationButtonClicked"
+
+            android:visibility="visible" />
+
+        <ImageButton
+            android:id="@+id/check_led_btn_on"
+            android:layout_width="100dp"
+            android:layout_height="20dp"
+            android:layout_centerInParent="true"
+            android:background="@android:drawable/button_onoff_indicator_on"
+            android:onClick="checkNotificationButtonUnclicked"
+
+            android:visibility="gone" />
+
+
+    </RelativeLayout>
+
+
+    <TextView
+        android:id="@+id/seekBar_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_gravity="center"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:text="Frequency (ms)"/>
+
+    <SeekBar
+        android:id="@+id/frequency_seekBar"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="15dp"
+        android:max="300"
+        android:indeterminate="false"
+        android:progress="90"/>
+
+
+    <TextView
+        android:id="@+id/seekBar_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="15dp"
+        android:layout_marginBottom="40dp"
+        android:textSize="20dp"
+        android:textStyle="bold" />
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/writeSentenceBtn"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:onClick="writeSentenceActivity"
+            android:text="Encrypt"
+            android:textSize="15dp" />
+
+        <Button
+            android:id="@+id/goToAlphabetBtn"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:onClick="goToAlphabetActivity"
+            android:text="Alphabet"
+            android:textSize="15dp" />
+
+        <Button
+
+            android:id="@+id/decryptSentenceBtn"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="false"
+            android:onClick="decryptSentenceActivity"
+            android:text="Decrypt"
+            android:textSize="15dp" />
+
+    </RelativeLayout>
+
+
+</LinearLayout>
