@@ -186,6 +186,7 @@ public class MainActivity extends AppCompatActivity {
         super.onRestoreInstanceState(savedInstanceState);
         choice = savedInstanceState.getInt("CHOICE_STATE");
         morseCodeGeneralManager.setChoice(choice);
+        progress_textView.setText(savedInstanceState.getInt("PROGRESS")+"/"+seekBar.getMax());
         Log.d("","onRestoreInstanceState");
     }
 
@@ -193,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState){
         super.onSaveInstanceState(outState);
         outState.putInt("CHOICE_STATE", choice);
+        outState.putInt("PROGRESS", unit);
         Log.d("","onSaveInstanceState");
     }
 

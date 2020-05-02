@@ -24,14 +24,13 @@ public class MorseCodeLedManager {
     NotificationReceiver nReceiver;
 
 
-    private NotificationManagerCompat notificationManager;
-    final private String channelIDLights = "Lights";
+    private NotificationManager notificationManager;
     private Context context;
     private int unit;
     private long[] pattern;
 
-    int notificationID = 1;
-    int receivedID;
+    private int notificationID = 1;
+    private int receivedID;
 
     public MorseCodeLedManager(int unit,long[] pattern, Context context){
         this.context = context;
@@ -56,15 +55,16 @@ public class MorseCodeLedManager {
 
     public void createLedNotification() {
         notificationID = 1;
+        String channelIDLights = "Lights";
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this.context, channelIDLights);
 
-        NotificationManager notificationManager =  (NotificationManager) this.context.getSystemService( Context.NOTIFICATION_SERVICE );
+        notificationManager =  (NotificationManager) this.context.getSystemService( Context.NOTIFICATION_SERVICE );
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             @SuppressLint("WrongConstant") NotificationChannel notificationChannel = new NotificationChannel(channelIDLights, "Lights notifications", NotificationManager.IMPORTANCE_MAX);
             // Configure the notification channel.
             notificationChannel.enableLights(true);
-            //notificationChannel.setLightColor(Color.RED);
+            //notificationChannel.setLightColor(Color.MAGENTA);
             //notificationChannel.setVibrationPattern(new long[]{0, 1000, 500, 1000});
             //notificationChannel.enableVibration(true);
             notificationManager.createNotificationChannel(notificationChannel);
@@ -73,9 +73,7 @@ public class MorseCodeLedManager {
         builder.setSmallIcon(R.drawable.notification_icon1);
         builder.setContentTitle("Morse code");
         builder.setContentText("Led notification");
-        builder.setLights(Color.MAGENTA, 500, 500);
-        builder.setAutoCancel(true);
-        builder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE);
+        builder.setLights(Color.GREEN, 500, 500);
         builder.setPriority(Notification.PRIORITY_MAX);
 
         notificationManager.notify(notificationID, builder.build());
