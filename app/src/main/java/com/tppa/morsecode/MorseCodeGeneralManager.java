@@ -5,7 +5,7 @@ import android.content.Context;
 public class MorseCodeGeneralManager {
 
     MorseCodeVibrationManager morseCodeVibrationManager;
-    MorseCodeLedManager morseCodeLedManager;
+    MorseCodeLightManager morseCodeLightManager;
     int choice;
     long[] pattern;
     int unit;
@@ -15,7 +15,7 @@ public class MorseCodeGeneralManager {
         this.pattern = pattern;
         this.unit = unit;
         this.morseCodeVibrationManager = new MorseCodeVibrationManager(unit,pattern, context);
-        this.morseCodeLedManager = new MorseCodeLedManager(unit, pattern, context);
+        this.morseCodeLightManager = new MorseCodeLightManager(unit, pattern, context);
     }
 
     public void setChoice(int choice){
@@ -25,42 +25,51 @@ public class MorseCodeGeneralManager {
 
     public void setUnit(int unit){
         morseCodeVibrationManager.setUnit(unit);
-        morseCodeLedManager.setUnit(unit);
+        morseCodeLightManager.setUnit(unit);
         this.unit = unit;
     }
 
     public void setPattern(long[] pattern){
         morseCodeVibrationManager.setPattern(pattern);
-        morseCodeLedManager.setPattern(pattern);
+        morseCodeLightManager.setPattern(pattern);
         this.pattern = pattern;
     }
 
 
 
     public void createActionForCheckButton(){
-        if(choice == 0){
-            morseCodeVibrationManager.createVibration(0);
+
+        if(choice == 0) {
+            morseCodeLightManager.createLight();
         }
         else if(choice == 1){
-            morseCodeLedManager.createLedNotification();
+            morseCodeVibrationManager.createVibration(0);
         }
     }
 
     public void stopActionForCheckButton(){
-        if(choice == 0){
-            morseCodeVibrationManager.stopVibration();
+
+        if(choice == 0) {
+            morseCodeLightManager.turnOffFlashLight();
         }
         else if(choice == 1){
-            morseCodeLedManager.stopNotification();
+            morseCodeVibrationManager.stopVibration();
         }
     }
 
     public void actionForSingleCharacter(String character){
         if(choice == 0){
-            morseCodeVibrationManager.vibrateForCharacter(character);
+            morseCodeLightManager.flashForCharacter(character);
         }
         else if(choice == 1){
-            morseCodeLedManager.blinkForCharacter(character);
+            morseCodeVibrationManager.vibrateForCharacter(character);
         }
     }
+
+    public void stopLightAndVibration(){
+        morseCodeVibrationManager.stopVibration();
+        morseCodeLightManager.release();
+    }
+
+
 }

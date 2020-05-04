@@ -19,6 +19,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.Normalizer;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.RunnableFuture;
 
 public class WriteSentenceActivity extends AppCompatActivity {
 
@@ -152,41 +155,43 @@ public class WriteSentenceActivity extends AppCompatActivity {
             String character;
             String morseCode;
 
-            //normalize for diacritics
-            sentence = sentence.toLowerCase();
-            String s = Normalizer.normalize(sentence, Normalizer.Form.NFD);
-            s = s.replaceAll("[^\\p{ASCII}]", "");
-            sentence = s;
+            if(index <= sentence.length()){
 
-            delay = 0;
-            character = sentence.substring(index-1,index);
-            if (alphabet.alphabet.containsKey((character))) {
-                morseCode = alphabet.alphabet.get(character);
-                encryptedSentence = encryptedSentence + morseCode + " ";
-                morseCodeGeneralManager.actionForSingleCharacter(character);
-                character_show.setText(character);
-                morse_code_show.setText(morseCode);
-                for(int j = 0; j < morseCode.length(); j++){
-                    if(morseCode.charAt(j) == '•')
-                        delay+=unit;
-                    else if(morseCode.charAt(j) == '-')
-                        delay+=3*unit;
+                //normalize for diacritics
+                sentence = sentence.toLowerCase();
+                String s = Normalizer.normalize(sentence, Normalizer.Form.NFD);
+                s = s.replaceAll("[^\\p{ASCII}]", "");
+                sentence = s;
+
+                delay = 0;
+                character = sentence.substring(index-1,index);
+                if (alphabet.alphabet.containsKey((character))) {
+                    morseCode = alphabet.alphabet.get(character);
+                    encryptedSentence = encryptedSentence + morseCode + " ";
+                    morseCodeGeneralManager.actionForSingleCharacter(character);
+                    character_show.setText(character);
+                    morse_code_show.setText(morseCode);
+                    for(int j = 0; j < morseCode.length(); j++){
+                        if(morseCode.charAt(j) == '•')
+                            delay+=unit;
+                        else if(morseCode.charAt(j) == '-')
+                            delay+=3*unit;
+                    }
+
+                } else if (character.equals(" ")) {
+                    encryptedSentence = encryptedSentence + " ";
+                    delay = 2*unit;
                 }
 
-            } else if (character.equals(" ")) {
-                encryptedSentence = encryptedSentence + " ";
-                delay = 2*unit;
+                delay+=7 * unit;
+                handler.postDelayed(showCharacter,delay);
+
             }
-            delay+=10*unit;
+            else{
+                handler.postDelayed(startChooseActionDialogDialog,200);
+            }
 
             index++;
-
-            if(index <= sentence.length()){
-                handler.postDelayed(showCharacter,delay);
-            }
-            else {
-                handler.postDelayed(startChooseActionDialogDialog, 500);
-            }
         }
 
     };
@@ -206,16 +211,18 @@ public class WriteSentenceActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
+        morseCodeGeneralManager.stopLightAndVibration();
         handler.removeCallbacks(showCharacter);
         handler.removeCallbacks(startChooseActionDialogDialog);
-        Log.d("lifecycle","onPause invoked");
+        Log.d("lifecycle","stopLightAndVibration invoked");
     }
     @Override
     protected void onStop() {
         super.onStop();
+        morseCodeGeneralManager.stopLightAndVibration();
         handler.removeCallbacks(showCharacter);
         handler.removeCallbacks(startChooseActionDialogDialog);
-        Log.d("lifecycle","onStop invoked");
+        Log.d("lifecycle","release invoked");
     }
     @Override
     protected void onRestart() {
@@ -225,6 +232,7 @@ public class WriteSentenceActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        morseCodeGeneralManager.stopLightAndVibration();
         handler.removeCallbacks(showCharacter);
         handler.removeCallbacks(startChooseActionDialogDialog);
         Log.d("lifecycle","onDestroy invoked");

@@ -92,7 +92,7 @@ public class GoToAlphabetActivity extends AppCompatActivity {
     protected void onPause(){
         super.onPause();
         morseCodeGeneralManager.stopActionForCheckButton();
-        Log.d("onPause","onPause");
+        Log.d("stopLightAndVibration","stopLightAndVibration");
     }
 
     @Override
@@ -104,7 +104,7 @@ public class GoToAlphabetActivity extends AppCompatActivity {
     @Override
     protected void onStop(){
         super.onStop();morseCodeGeneralManager.stopActionForCheckButton();
-        Log.d("onStop", "onStop");
+        Log.d("release", "release");
     }
 
     @Override

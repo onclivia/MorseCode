@@ -186,7 +186,7 @@ public class SendSms extends AppCompatActivity {
     @Override
     protected void onPause(){
         super.onPause();
-        Log.d("onPause","onPause");
+        Log.d("stopLightAndVibration","stopLightAndVibration");
     }
 
     @Override
@@ -198,7 +198,7 @@ public class SendSms extends AppCompatActivity {
     @Override
     protected void onStop(){
         super.onStop();
-        Log.d("onStop", "onStop");
+        Log.d("release", "release");
     }
 
     @Override
